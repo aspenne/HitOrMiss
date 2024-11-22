@@ -23,7 +23,8 @@ Thumbs.db
 # Ignorer les fichiers de compilation
 dist/
 build/
+hit-or-miss-front/.next/
 
-# Ignorer les fichiers de paquets verrouillés (facultatif, si vous ne les versionnez pas)
+# Ignorer les fichiers de paquets verrouillés
 package-lock.json
 yarn.lock
