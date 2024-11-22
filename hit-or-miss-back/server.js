@@ -1,7 +1,8 @@
 import cors from "cors";
 import express from "express";
 import { createServer } from "http";
-const socket = require("./src/socket.js");
+import socket from "./src/socket.js"; // Utilisez l'importation par défaut
+import songRoutes from './src/routes/song.js'; // Utilisez l'importation par défaut
 
 const app = express();
 
@@ -13,6 +14,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use('/api/song', songRoutes);
 
 const server = createServer(app);
 socket(server);
