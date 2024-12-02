@@ -1,6 +1,6 @@
-const { Server } = require("socket.io");
+import { Server } from "socket.io";
 
-module.exports = function (server) {
+const socket = (server) => {
   const io = new Server(server, {
     cors: {
       origin: "http://localhost:3000", // L'URL du front-end (Next.js)
@@ -33,27 +33,21 @@ module.exports = function (server) {
       if (!rooms[roomId]) {
         rooms[roomId] = { players: [], id: roomId };
       }
-      rooms[roomId].players.push({ playerId, playerName });
-
       socket.join(roomId);
-
-      io.to(roomId).emit("playerJoinedRoom", rooms[roomId].players);
-      console.log(rooms);
-      console.log(rooms[roomId]);
+      rooms[roomId].players.push({ id: playerId, name: playerName });
+      io.to(roomId).emit("roomUpdate", rooms[roomId]);
+      console.log(`${playerName} a rejoint la room ${roomId}`);
     });
 
     // Quitter une room
-    socket.on("leaveRoom", ({ roomId, username }) => {
+    socket.on("leaveRoom", ({ roomId, playerId }) => {
       if (rooms[roomId]) {
         rooms[roomId].players = rooms[roomId].players.filter(
-          (player) => player.id !== socket.id
+          (player) => player.id !== playerId
         );
         socket.leave(roomId);
-
-        // Envoyer une mise à jour à tous les clients dans la room
         io.to(roomId).emit("roomUpdate", rooms[roomId]);
-
-        console.log(`${username} a quitté la room ${roomId}`);
+        console.log(`Un utilisateur a quitté la room ${roomId}`);
       }
     });
 
@@ -63,3 +57,5 @@ module.exports = function (server) {
     });
   });
 };
+
+export default socket;
