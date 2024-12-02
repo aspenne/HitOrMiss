@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 const QuizRoom = () => {
   const { roomId } = useParams(); // Récupère le roomId de l'URL
   const [currentTrack, setCurrentTrack] = useState(null);
+  const [playing, setPlaying] = useState(false);
   const audioRef = useRef(null);
   const [username, setUsername] = useState('');
   const [playerId, setPlayerId] = useState('');
@@ -61,6 +62,30 @@ const QuizRoom = () => {
   }, []);
 
   useEffect(() => {
+    const handleMusicStarted = async ({ track }) => {
+      setCurrentTrack(track);
+      setPlaying(true);
+      if (audioRef.current) {
+        try {
+          await audioRef.current.play();
+        } catch (error) {
+          console.error("Failed to play audio:", error);
+        }
+      }
+    };
+
+    socket.on("musicStarted", handleMusicStarted);
+
+    return () => {
+      socket.off("musicStarted", handleMusicStarted);
+    };
+  }, []);
+
+  const handleStartMusic = () => {
+    retrieveTrack();
+  };
+
+  const retrieveTrack = () => {
     fetch("http://localhost:3001/api/song")
       .then((response) => {
         if (!response.ok) {
@@ -69,19 +94,11 @@ const QuizRoom = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Fetched data:", data);
         setCurrentTrack(data.track);
+        socket.emit("startMusic", { roomId, track: data.track });
       })
       .catch((error) => console.error("Error fetching track:", error));
-  }, []);
-
-  useEffect(() => {
-    if (currentTrack && audioRef.current) {
-      audioRef.current.play().catch((error) => {
-        console.error("Failed to play audio:", error);
-      });
-    }
-  }, [currentTrack]);
+  };
 
   return (
     <div className='flex flex-row h-[100dvh]'>
@@ -89,6 +106,7 @@ const QuizRoom = () => {
         <h1>Hit or Miss</h1>
         <h2>Blind Test</h2>
         <p>Listen to the song and guess the title or the artist!</p>
+        {!playing && <button onClick={handleStartMusic}>Start Music</button>}
         {currentTrack && (
           <audio ref={audioRef} controls autoPlay>
             <source src={currentTrack} type="audio/mp3" />

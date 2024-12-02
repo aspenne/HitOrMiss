@@ -52,6 +52,11 @@ const socket = (server) => {
     socket.on("disconnect", () => {
       console.log("Un utilisateur s'est déconnecté : " + socket.id);
     });
+
+    // Lancer la musique
+    socket.on("startMusic", ({ roomId, track }) => {
+      io.to(roomId).emit("musicStarted", { track });
+    });
   });
 };
 
