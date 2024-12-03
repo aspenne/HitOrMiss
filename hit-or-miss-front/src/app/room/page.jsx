@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 const HomePage = () => {
     const router = useRouter();
@@ -18,12 +19,13 @@ const HomePage = () => {
     }
 
     const joinRoom = () => {
+        localStorage.setItem('name', username);
+        localStorage.setItem('playerId', uuidv4());
         router.push(`/room/${roomId}`);
     };
 
     return (
         <div className="p-4">
-            <h1>Bienvenue au Quiz Game</h1>
             <button onClick={createRoom} className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-md">
                 Créer une nouvelle room
             </button>
