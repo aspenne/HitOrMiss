@@ -1,25 +1,42 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import AnswerBar from '@/app/components/answerBar';
+import Chatbox from '@/app/components/chatbox';
+import LeaderBoard from '@/app/components/leaderboard';
+import socket from "@/app/socket";
+import { useParams } from 'next/navigation';
+import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import Chatbox from "../../components/chatbox";
-import socket from "../../socket";
 
 const QuizRoom = () => {
   const { roomId } = useParams(); // Récupère le roomId de l'URL
-  const [players, setPlayers] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
   const audioRef = useRef(null);
+  const [username, setUsername] = useState('');
+  const [playerId, setPlayerId] = useState('');
 
-  useEffect(() => {
-    console.log(roomId);
-    socket.emit("joinRoom", {
-      roomId: roomId,
-      playerName: localStorage.getItem("name") || "Anonyme",
-      playerId: uuidv4(),
-    });
-  }, []);
+    const [players, setPlayers] = useState([{
+        playerName: '',
+        playerId: ''
+    }]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.localStorage) {
+            const storedName = localStorage.getItem('name');
+            const storePlayerId = localStorage.getItem('playerId');
+            setUsername(storedName || 'Anonyme');
+            setPlayerId(storePlayerId || uuidv4());
+        }
+    }, []);
+
+    useEffect(() => {
+        console.log('test', roomId);
+        socket.emit('joinRoom', {
+            roomId: roomId,
+            playerName: localStorage.getItem('name') || 'Anonyme',
+            playerId: localStorage.getItem('playerId') || uuidv4()
+        });
+    }, []);
 
   useEffect(() => {
     socket.on("playerJoinedRoom", (updatedPlayers) => {
@@ -55,17 +72,8 @@ const QuizRoom = () => {
   }, [currentTrack]);
 
   return (
-    <div className="relative">
-      <h1>Room: {roomId}</h1>
-      <div>
-        <h2>Joueurs dans la room</h2>
-        <ul>
-          {players.map((player) => (
-            <li key={player.playerId}>{player.playerName}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
+    <div className='flex flex-row h-[100dvh]'>
+      <div className='w-7/12'>
         <h1>Hit or Miss</h1>
         <h2>Blind Test</h2>
         <p>Listen to the song and guess the title or the artist!</p>
@@ -75,8 +83,10 @@ const QuizRoom = () => {
             Your browser does not support the audio element.
           </audio>
         )}
+        <AnswerBar roomId={roomId} playerId={playerId}></AnswerBar>
       </div>
-      <Chatbox roomId={roomId} />
+      <LeaderBoard roomId={roomId} players={players} playerId={playerId}></LeaderBoard>
+      <Chatbox roomId={roomId} username={username}/>
     </div>
   );
 };

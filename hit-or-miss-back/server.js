@@ -1,13 +1,13 @@
-import express from 'express';
-import cors from 'cors';
-import { createServer } from 'http';
-import socket from './src/socket.js';
 import songRoutes from './src/routes/song.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+import cors from "cors";
+import express from "express";
+import { createServer } from "http";
+import socket from "./src/socket.js";
 
 const app = express();
 

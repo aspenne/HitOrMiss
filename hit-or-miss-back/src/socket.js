@@ -13,30 +13,23 @@ const socket = (server) => {
   const rooms = {};
 
   io.on("connection", (socket) => {
-    console.log("Un utilisateur est connecté : " + socket.id);
-
-    socket.on("chat message", ({ message, roomId }) => {
-      console.log(roomId);
-      // Vérifie que le roomId est valide et que des utilisateurs sont connectés dans cette room
+    socket.on("chat message", ({ message, username, roomId }) => {
       if (rooms[roomId]) {
-        // Émettre l'événement newMessage à tous les utilisateurs de la room
-        io.to(roomId).emit("newMessage", message);
-      } else {
-        console.log(
-          `La room ${roomId} n'existe pas ou personne n'y est connecté.`
-        );
+        io.to(roomId).emit("newMessage", { message, username });
       }
     });
 
     // Rejoindre une room
-    socket.on("joinRoom", ({ roomId, playerId, playerName }) => {
+    socket.on("joinRoom", ({ roomId, playerName,  playerId}) => {
+      console.log(rooms[roomId]);
       if (!rooms[roomId]) {
-        rooms[roomId] = { players: [], id: roomId };
+        rooms[roomId] = { players: [{playerName, playerId}], id: roomId };
+      }
+      if (rooms[roomId].players.every((player) => player.playerId !== playerId)){
+        rooms[roomId].players.push({ playerName, playerId });
       }
       socket.join(roomId);
-      rooms[roomId].players.push({ id: playerId, name: playerName });
-      io.to(roomId).emit("roomUpdate", rooms[roomId]);
-      console.log(`${playerName} a rejoint la room ${roomId}`);
+      io.to(roomId).emit("playerJoinedRoom", rooms[roomId].players);
     });
 
     // Quitter une room
@@ -47,8 +40,12 @@ const socket = (server) => {
         );
         socket.leave(roomId);
         io.to(roomId).emit("roomUpdate", rooms[roomId]);
-        console.log(`Un utilisateur a quitté la room ${roomId}`);
       }
+    });
+
+    socket.on("answer", ({ answer, playerId, roomId }) => {
+      console.log(answer, playerId, roomId);
+      io.to(roomId).emit("newAnswer", answer, playerId);
     });
 
     // Gestion de la déconnexion

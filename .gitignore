@@ -28,3 +28,4 @@ hit-or-miss-front/.next/
 # Ignorer les fichiers de paquets verrouillés
 package-lock.json
 yarn.lock
+bun.lockb
