@@ -30,6 +30,18 @@ const QuizRoom = () => {
     }, []);
 
     useEffect(() => {
+        const handleBeforeUnload = () => {
+          socket.emit("leaveRoom", { roomId: roomId, playerId: playerId });
+        };
+      
+        window.addEventListener("beforeunload", handleBeforeUnload);
+      
+        return () => {
+          window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+      }, [roomId, playerId]);
+
+    useEffect(() => {
         console.log('test', roomId);
         socket.emit('joinRoom', {
             roomId: roomId,
@@ -39,12 +51,12 @@ const QuizRoom = () => {
     }, []);
 
   useEffect(() => {
-    socket.on("playerJoinedRoom", (updatedPlayers) => {
+    socket.on("roomUpdate", (updatedPlayers) => {
       setPlayers(updatedPlayers);
     });
 
     return () => {
-      socket.off("playerJoinedRoom");
+      socket.off("roomUpdate");
     };
   }, []);
 

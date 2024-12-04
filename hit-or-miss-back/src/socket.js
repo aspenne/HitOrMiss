@@ -29,17 +29,17 @@ const socket = (server) => {
         rooms[roomId].players.push({ playerName, playerId });
       }
       socket.join(roomId);
-      io.to(roomId).emit("playerJoinedRoom", rooms[roomId].players);
+      io.to(roomId).emit("roomUpdate", rooms[roomId].players);
     });
 
     // Quitter une room
     socket.on("leaveRoom", ({ roomId, playerId }) => {
       if (rooms[roomId]) {
         rooms[roomId].players = rooms[roomId].players.filter(
-          (player) => player.id !== playerId
+          (player) => player.playerId !== playerId
         );
         socket.leave(roomId);
-        io.to(roomId).emit("roomUpdate", rooms[roomId]);
+        io.to(roomId).emit("roomUpdate", rooms[roomId].players);
       }
     });
 
