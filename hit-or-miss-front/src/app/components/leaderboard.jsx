@@ -4,7 +4,7 @@ import socket from '../socket';
 const LeaderBoard = (props) => {
     const roomId = props.roomId;
     const [players, setPlayers] = useState([]);
-    const [response, setResponse] = useState('toto'); // La réponse correcte
+    const [response, setResponse] = useState('toto'); 
 
     useEffect(() => {
         const updatedPlayers = props.players.map(player => ({
