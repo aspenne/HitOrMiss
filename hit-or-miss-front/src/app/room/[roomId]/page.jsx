@@ -34,16 +34,15 @@ const QuizRoom = () => {
         const handleBeforeUnload = () => {
           socket.emit("leaveRoom", { roomId: roomId, playerId: playerId });
         };
-      
+
         window.addEventListener("beforeunload", handleBeforeUnload);
-      
+
         return () => {
           window.removeEventListener("beforeunload", handleBeforeUnload);
         };
       }, [roomId, playerId]);
 
     useEffect(() => {
-        console.log('test', roomId);
         socket.emit('joinRoom', {
             roomId: roomId,
             playerName: localStorage.getItem('name') || 'Anonyme',
@@ -81,10 +80,6 @@ const QuizRoom = () => {
     };
   }, []);
 
-  const handleStartMusic = () => {
-    retrieveTrack();
-  };
-
   const retrieveTrack = () => {
     fetch("http://localhost:3001/api/song")
       .then((response) => {
@@ -94,7 +89,6 @@ const QuizRoom = () => {
         return response.json();
       })
       .then((data) => {
-        setCurrentTrack(data.track);
         socket.emit("startMusic", { roomId, track: data.track });
       })
       .catch((error) => console.error("Error fetching track:", error));
@@ -106,7 +100,7 @@ const QuizRoom = () => {
         <h1>Hit or Miss</h1>
         <h2>Blind Test</h2>
         <p>Listen to the song and guess the title or the artist!</p>
-        {!playing && <button onClick={handleStartMusic}>Start Music</button>}
+        {!playing && <button onClick={retrieveTrack}>Start Music</button>}
         {currentTrack && (
           <audio ref={audioRef} controls autoPlay>
             <source src={currentTrack} type="audio/mp3" />
