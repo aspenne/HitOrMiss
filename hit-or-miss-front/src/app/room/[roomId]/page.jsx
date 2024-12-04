@@ -11,6 +11,8 @@ import { v4 as uuidv4 } from "uuid";
 const QuizRoom = () => {
   const { roomId } = useParams(); // Récupère le roomId de l'URL
   const [currentTrack, setCurrentTrack] = useState(null);
+  const [artist, setArtist] = useState(null);
+  const [song, setSong] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const audioRef = useRef(null);
@@ -64,8 +66,10 @@ const QuizRoom = () => {
   }, []);
 
   useEffect(() => {
-    const handleMusicStarted = async ({ track }) => {
-      setCurrentTrack(track);
+    const handleMusicStarted = async (data) => {
+      setCurrentTrack(data.track);
+      setArtist(data.artist);
+      setSong(data.song);
       setPlaying(true);
       if (audioRef.current) {
         try {
@@ -84,8 +88,11 @@ const QuizRoom = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("changeTrack", ({track}) => {
-      setCurrentTrack(track);
+    socket.on("changeTrack", (data) => {
+      setShowAnswer(false);
+      setCurrentTrack(data.track);
+      setArtist(data.artist);
+      setSong(data.song);
     });
 
     return () => {
@@ -95,10 +102,11 @@ const QuizRoom = () => {
 
   useEffect(() => {
     socket.on("showAnswer", () => {
-      console.log("Show answer");
+      setShowAnswer(true);
     });
 
     socket.on("stopMusic", () => {
+      setShowAnswer(false);
       setPlaying(false);
       setCurrentTrack(null);
       audioRef.current.pause();
@@ -130,6 +138,13 @@ const QuizRoom = () => {
   return (
     <section className="flex items-center justify-center h-screen bg-gray-800 text-white">
       <div className="w-7/12 text-center">
+        {showAnswer && artist!=null && song!=null && (
+          <div className="bg-gray-700 p-4 rounded-md mb-4">
+            <p className="text-sm">
+              Answer: {song} - {artist}
+            </p>
+          </div>
+        )}
         <h1 className="text-3xl font-bold mb-4">Hit or Miss</h1>
         <h2 className="text-xl font-bold mb-4">Blind Test</h2>
         <p className="text-sm mb-4">
