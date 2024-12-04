@@ -14,11 +14,11 @@ const AnswerBar = (props) => {
   };
 
     return (
-        <div className="fixed bottom-0 h-2O w-7/12 bg-gray-800 text-white flex flex-col justify-between shadow-lg p-4 border-t-2 border-white">
+        <div className="fixed left-0 bottom-0 h-2O w-7/12 text-white flex flex-col justify-between shadow-lg p-4 border-t-2 border-white bg-black ">
             <div className="flex items-center flex-row justify-around gap-2">
                 <input
                     type="text"
-                    className="flex-grow p-2 rounded-md bg-gray-600 border-none focus:outline-none"
+                    className="flex-grow p-2 rounded-md bg-gray-200 border-none focus:outline-none text-black"
                     placeholder="Answer"
                     value={answer}
                     onKeyDown={(e) => { 

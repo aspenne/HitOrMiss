@@ -31,7 +31,7 @@ const Chatbox = (props) => {
     }
 
     return (
-        <div className="h-full w-3/12 bg-gray-800 text-white flex flex-col justify-between shadow-lg p-4 border-l-2 border-white">
+        <div className="h-full w-3/12 bg-gradient-to-t from-black to-slate-800 text-white flex flex-col justify-between shadow-lg p-4 border-l-2 border-white">
             <h2 className="text-lg font-bold mb-4">Chatbox</h2>
             <div className="flex-grow overflow-y-auto mb-4 bg-gray-700 p-4 rounded-md">
                 {messages.map((msg, index) => (
@@ -43,7 +43,7 @@ const Chatbox = (props) => {
             <div className="flex items-center flex-row">
                 <input
                     type="text"
-                    className="flex-grow p-2 rounded-l-md bg-gray-600 border-none focus:outline-none"
+                    className="flex-grow p-2 rounded-l-md bg-gray-200 border-none focus:outline-none text-black"
                     placeholder="Type your message"
                     value={message}
                     onKeyDown={(e) => { 

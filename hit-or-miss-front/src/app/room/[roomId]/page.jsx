@@ -136,8 +136,8 @@ const QuizRoom = () => {
   };
 
   return (
-    <section className="flex items-center justify-center h-screen bg-gray-800 text-white">
-      <div className="w-7/12 text-center">
+    <section className="flex items-center justify-center h-screen bg-gradient-to-t from-black to-slate-800 text-white">
+      <div className="w-7/12 text-center flex justify-center items-center flex-col">
         {showAnswer && artist!=null && song!=null && (
           <div className="bg-gray-700 p-4 rounded-md mb-4">
             <p className="text-sm">
@@ -188,6 +188,8 @@ const QuizRoom = () => {
         roomId={roomId}
         players={players}
         playerId={playerId}
+        artist={artist} 
+        song={song}
       ></LeaderBoard>
       <Chatbox roomId={roomId} username={username} />
     </section>
