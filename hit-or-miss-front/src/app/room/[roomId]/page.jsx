@@ -12,6 +12,7 @@ const QuizRoom = () => {
   const { roomId } = useParams(); // Récupère le roomId de l'URL
   const [currentTrack, setCurrentTrack] = useState(null);
   const [playing, setPlaying] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
   const audioRef = useRef(null);
   const [username, setUsername] = useState("");
   const [playerId, setPlayerId] = useState("");
@@ -82,6 +83,36 @@ const QuizRoom = () => {
     };
   }, []);
 
+  useEffect(() => {
+    socket.on("changeTrack", ({track}) => {
+      setCurrentTrack(track);
+    });
+
+    return () => {
+      socket.off("changeTrack");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("showAnswer", () => {
+      console.log("Show answer");
+    });
+
+    socket.on("stopMusic", () => {
+      setPlaying(false);
+      setCurrentTrack(null);
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.load();
+      audioRef.current.play();
+    }
+  }, [currentTrack]);
+
   const retrieveTrack = () => {
     fetch("http://localhost:3001/api/song")
       .then((response) => {
@@ -112,7 +143,7 @@ const QuizRoom = () => {
             Start Music
           </button>
         )}
-        {currentTrack && (
+        {currentTrack && playing && (
           <div>
             <audio className="hidden" ref={audioRef} controls autoPlay>
               <source src={currentTrack} type="audio/mp3" />
