@@ -62,7 +62,7 @@ const LeaderBoard = (props) => {
             <p> {player.playerName} </p>
             <small> {player.score} points </small>
             <br />
-            <small>{player.answer === artist || player.answer === song ? player.answer : ""}</small>
+            <small>{player.answer === artist || player.answer === song ? "" : player.answer}</small>
           </div>
         ))}
       </div>
